@@ -48,12 +48,24 @@ interface UseSubscriptionOptions {
   onAuthRequired?: () => void;
 }
 
+// Cooldown constants
+const FAILURE_COOLDOWN = 60_000; // 1 minute before retrying after failure
+const ERROR_TOAST_COOLDOWN = 60_000; // 1 minute between error toasts
+
 export function useSubscription({ user, onAuthRequired }: UseSubscriptionOptions) {
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusResponse | null>(null);
   const subscriptionStatusFetchedAtRef = useRef<number | null>(null);
+  const subscriptionStatusRef = useRef<SubscriptionStatusResponse | null>(null);
   const lastVisibleRef = useRef<number>(Date.now());
   const retryCountRef = useRef<number>(0);
+  const lastFailureTimeRef = useRef<number>(0);
+  const lastErrorToastRef = useRef<number>(0);
+
+  // Sync subscriptionStatus to ref for use in callback without dependency
+  useEffect(() => {
+    subscriptionStatusRef.current = subscriptionStatus;
+  }, [subscriptionStatus]);
 
   // Track visibility changes to invalidate stale cache
   useEffect(() => {
@@ -78,14 +90,26 @@ export function useSubscription({ user, onAuthRequired }: UseSubscriptionOptions
         return null;
       }
 
+      const now = Date.now();
+
+      // If we failed recently and this isn't a forced refresh, bail early
+      if (!options?.force && lastFailureTimeRef.current > 0) {
+        const timeSinceFailure = now - lastFailureTimeRef.current;
+        if (timeSinceFailure < FAILURE_COOLDOWN) {
+          return subscriptionStatusRef.current;
+        }
+      }
+
+      // Use ref for cache check to avoid dependency on subscriptionStatus
+      const currentStatus = subscriptionStatusRef.current;
       const lastFetchedAt = subscriptionStatusFetchedAtRef.current;
       if (
         !options?.force &&
-        subscriptionStatus &&
+        currentStatus &&
         lastFetchedAt &&
-        Date.now() - lastFetchedAt < 60_000
+        now - lastFetchedAt < 60_000
       ) {
-        return subscriptionStatus;
+        return currentStatus;
       }
 
       setIsCheckingSubscription(true);
@@ -113,6 +137,7 @@ export function useSubscription({ user, onAuthRequired }: UseSubscriptionOptions
             }
           }
           retryCountRef.current = 0;
+          lastFailureTimeRef.current = Date.now();
           onAuthRequired?.();
           return null;
         }
@@ -120,32 +145,47 @@ export function useSubscription({ user, onAuthRequired }: UseSubscriptionOptions
         retryCountRef.current = 0;
 
         if (!response.ok) {
+          lastFailureTimeRef.current = Date.now();
           const errorPayload = await response.json().catch(() => ({}));
           const message =
             typeof (errorPayload as { error?: string }).error === 'string'
               ? (errorPayload as { error?: string }).error!
               : 'Failed to check subscription status. Please try again.';
-          toast.error(message);
+          // Debounce error toasts
+          if (Date.now() - lastErrorToastRef.current > ERROR_TOAST_COOLDOWN) {
+            toast.error(message);
+            lastErrorToastRef.current = Date.now();
+          }
           return null;
         }
 
+        // Success - clear failure tracking
+        lastFailureTimeRef.current = 0;
         const data: SubscriptionStatusResponse = await response.json();
         setSubscriptionStatus(data);
         subscriptionStatusFetchedAtRef.current = Date.now();
         return data;
       } catch (error) {
         console.error('Failed to fetch subscription status:', error);
-        toast.error('Unable to check your subscription right now.');
+        lastFailureTimeRef.current = Date.now();
+        // Debounce error toasts
+        if (Date.now() - lastErrorToastRef.current > ERROR_TOAST_COOLDOWN) {
+          toast.error('Unable to check your subscription right now.');
+          lastErrorToastRef.current = Date.now();
+        }
         return null;
       } finally {
         setIsCheckingSubscription(false);
       }
     },
-    [user, subscriptionStatus, onAuthRequired]
+    [user, onAuthRequired]
   );
 
   useEffect(() => {
     subscriptionStatusFetchedAtRef.current = null;
+    subscriptionStatusRef.current = null;
+    lastFailureTimeRef.current = 0;
+    lastErrorToastRef.current = 0;
     setSubscriptionStatus(null);
   }, [user]);
 
