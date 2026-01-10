@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { resolveAppUrl } from '@/lib/utils'
+import { useInAppBrowser } from '@/lib/hooks/use-in-app-browser'
+import { Copy } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +30,12 @@ export function AuthModal({ open, onOpenChange, onSuccess, trigger = 'manual', c
   const [success, setSuccess] = useState(false)
   const supabase = createClient()
   const appUrl = resolveAppUrl(typeof window !== 'undefined' ? window.location.origin : undefined)
+  const isInApp = useInAppBrowser()
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href)
+    toast.success('Link copied! Paste it in Chrome, Safari, or Firefox.')
+  }
 
   const handleSignUp = async () => {
     setLoading(true)
@@ -272,9 +280,28 @@ export function AuthModal({ open, onOpenChange, onSuccess, trigger = 'manual', c
                 </div>
               </div>
 
+              {isInApp && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-amber-800 text-sm">
+                    <strong>Google sign-in won&apos;t work in this browser.</strong>
+                    <br />
+                    Please open this page in Chrome, Safari, or Firefox.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={handleCopyLink}
+                  >
+                    <Copy className="mr-2 h-3 w-3" />
+                    Copy link
+                  </Button>
+                </div>
+              )}
+
               <Button
                 onClick={handleGoogleSignIn}
-                disabled={loading}
+                disabled={loading || isInApp}
                 variant="outline"
                 className="inline-flex h-8 p-2 justify-center items-center shrink-0 w-full"
               >
@@ -357,9 +384,28 @@ export function AuthModal({ open, onOpenChange, onSuccess, trigger = 'manual', c
                 </div>
               </div>
 
+              {isInApp && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-amber-800 text-sm">
+                    <strong>Google sign-in won&apos;t work in this browser.</strong>
+                    <br />
+                    Please open this page in Chrome, Safari, or Firefox.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={handleCopyLink}
+                  >
+                    <Copy className="mr-2 h-3 w-3" />
+                    Copy link
+                  </Button>
+                </div>
+              )}
+
               <Button
                 onClick={handleGoogleSignIn}
-                disabled={loading}
+                disabled={loading || isInApp}
                 variant="outline"
                 className="inline-flex h-8 p-2 justify-center items-center shrink-0 w-full"
               >
