@@ -421,32 +421,8 @@ async function handler(req: NextRequest) {
       console.error('Error generating themes:', error);
     }
 
-    if (
-      user &&
-      !unlimitedAccess &&
-      generationDecision?.subscription &&
-      generationDecision.stats
-    ) {
-      const consumeResult = await consumeVideoCreditAtomic({
-        userId: user.id,
-        youtubeId: videoId,
-        subscription: generationDecision.subscription,
-        statsSnapshot: generationDecision.stats,
-        counted: true
-      });
-
-      if (!consumeResult.success) {
-        console.error('Failed to consume video credit:', consumeResult.error);
-      } else if (consumeResult.deduplicated) {
-        console.log(`[video-analysis] Deduplicated credit for new video ${videoId} (user: ${user.id})`);
-      }
-    }
-
-    if (!user && guestState) {
-      await recordGuestUsage(guestState, { supabase });
-    }
-
-    // Save analysis to database (server-side) with retry logic
+    // Save analysis to database FIRST (before consuming credit)
+    // This ensures credits are only consumed if save succeeds
     const saveResult = await saveVideoAnalysisWithRetry(supabase, {
       youtubeId: videoId,
       title: videoInfo?.title || `YouTube Video ${videoId}`,
@@ -473,6 +449,34 @@ async function handler(req: NextRequest) {
       console.log(
         `[video-analysis] Successfully saved new video after ${saveResult.retriedCount} retries`
       );
+    }
+
+    // Only consume credit AFTER successful save
+    if (
+      saveResult.success &&
+      user &&
+      !unlimitedAccess &&
+      generationDecision?.subscription &&
+      generationDecision.stats
+    ) {
+      const consumeResult = await consumeVideoCreditAtomic({
+        userId: user.id,
+        youtubeId: videoId,
+        subscription: generationDecision.subscription,
+        statsSnapshot: generationDecision.stats,
+        videoAnalysisId: saveResult.videoId ?? undefined,
+        counted: true
+      });
+
+      if (!consumeResult.success) {
+        console.error('Failed to consume video credit:', consumeResult.error);
+      } else if (consumeResult.deduplicated) {
+        console.log(`[video-analysis] Deduplicated credit for new video ${videoId} (user: ${user.id})`);
+      }
+    }
+
+    if (!user && guestState) {
+      await recordGuestUsage(guestState, { supabase });
     }
 
     const response = NextResponse.json({
