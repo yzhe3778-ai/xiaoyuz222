@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Loader2, Sparkles, Check, ChevronDown } from "lucide-react";
+import { Download, Loader2, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,

@@ -136,7 +136,7 @@ ${trimmedPreview}
       preview: metadataFallback
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to generate preview' },
       { status: 500 }

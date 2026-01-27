@@ -157,7 +157,7 @@ async function handler(request: NextRequest) {
       console.log(
         '[TRANSCRIPT] Using mock data (NEXT_PUBLIC_USE_MOCK_DATA=true)'
       );
-      const mockData = getMockTranscript(videoId);
+      const mockData = getMockTranscript();
 
       const rawSegments = mockData.content.map((item: any) => ({
         text: item.text,

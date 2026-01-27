@@ -14,7 +14,7 @@ export type BulkTranslationHandler = (
 
 export function useTranslation() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
-  const [translationCache, setTranslationCache] = useState<Map<string, string>>(new Map());
+  const [translationCache] = useState<Map<string, string>>(new Map());
   const translationBatcherRef = useRef<TranslationBatcher | null>(null);
   const errorShownRef = useRef(false);
 

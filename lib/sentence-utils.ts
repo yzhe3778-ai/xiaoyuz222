@@ -102,7 +102,6 @@ export function extendToSentenceBoundaries(
   let extendedStart = startChar;
   let extendedEnd = endChar;
   let foundStart = false;
-  let foundEnd = false;
   
   // Find sentences that contain our range
   for (const sentence of sentences) {
@@ -120,7 +119,6 @@ export function extendToSentenceBoundaries(
     // Find the sentence containing the end position
     if (sentenceStart <= endChar) {
       extendedEnd = sentenceEnd;
-      foundEnd = true;
     }
     
     currentPos = sentenceEnd;

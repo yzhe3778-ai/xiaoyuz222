@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { withSecurity, SECURITY_PRESETS } from '@/lib/security-middleware';
+import { withSecurity } from '@/lib/security-middleware';
 import { getStripeClient } from '@/lib/stripe-client';
 import { resolveAppUrl } from '@/lib/utils';
 

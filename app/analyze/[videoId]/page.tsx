@@ -209,7 +209,7 @@ export default function AnalyzePage() {
   const [themes, setThemes] = useState<string[]>([]);
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [themeTopicsMap, setThemeTopicsMap] = useState<Record<string, Topic[]>>({});
-  const [themeCandidateMap, setThemeCandidateMap] = useState<Record<string, TopicCandidate[]>>({});
+  const [, setThemeCandidateMap] = useState<Record<string, TopicCandidate[]>>({});
   const [usedTopicKeys, setUsedTopicKeys] = useState<Set<string>>(new Set());
   const baseTopicKeySet = useMemo(() => {
     const keys = new Set<string>();
@@ -1421,7 +1421,8 @@ export default function AnalyzePage() {
     checkRateLimit,
     user,
     checkGenerationLimit,
-    redirectToAuthForLimit
+    redirectToAuthForLimit,
+    forceRegenerate
   ]);
 
   useEffect(() => {
@@ -1748,7 +1749,7 @@ export default function AnalyzePage() {
   }, [videoId, topics]); // Re-run when video or topics change
 
   const [notes, setNotes] = useState<Note[]>([]);
-  const [isLoadingNotes, setIsLoadingNotes] = useState(false);
+  const [, setIsLoadingNotes] = useState(false);
   const [editingNote, setEditingNote] = useState<EditingNote | null>(null);
 
   useEffect(() => {

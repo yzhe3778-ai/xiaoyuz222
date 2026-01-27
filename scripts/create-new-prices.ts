@@ -33,7 +33,7 @@ try {
       }
     }
   });
-} catch (error) {
+} catch {
   console.error('⚠️  Warning: Could not load .env.local file');
 }
 

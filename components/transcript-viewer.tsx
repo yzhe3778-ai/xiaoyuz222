@@ -283,7 +283,7 @@ export function TranscriptViewer({
               scrollToElement(element);
           }
       }
-  }, [searchResults, scrollToElement]);
+  }, [searchResults, scrollToElement, currentResultIndex]);
 
   const jumpToCurrent = useCallback(() => {
     manualModeRef.current = false;
@@ -547,7 +547,7 @@ export function TranscriptViewer({
     });
   };
 
-  const handleSegmentClick = (segment: TranscriptSegment, e: React.MouseEvent) => {
+  const handleSegmentClick = (segment: TranscriptSegment) => {
     // Check if there is a text selection (dragging)
     const selection = window.getSelection();
     if (selection && selection.toString().length > 0) {
@@ -858,7 +858,7 @@ export function TranscriptViewer({
                         "group relative px-2.5 py-1.5 rounded-xl transition-all duration-200 cursor-pointer hover:bg-slate-50",
                         translationEnabled && "space-y-1"
                       )}
-                      onClick={(e) => handleSegmentClick(segment, e)}
+                      onClick={() => handleSegmentClick(segment)}
                     >
                       {/* Original text */}
                       <p

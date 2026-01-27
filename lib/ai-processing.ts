@@ -584,7 +584,7 @@ ${transcriptWithTimestamps}
         const repairedResponse = repairJson(response);
         parsedResponse = JSON.parse(repairedResponse);
         console.log('Successfully repaired malformed JSON response');
-      } catch (repairError) {
+      } catch {
         console.warn('Failed to parse single-pass topic response as JSON (repair also failed)', error);
 
         // For themed requests, avoid returning generic fallbacks that do not respect the theme.
@@ -699,10 +699,6 @@ async function findExactQuotes(
         confidence: match.confidence
       };
     } else {
-      // Check if normalized version exists
-      const quoteNormalized = normalizeWhitespace(quoteText);
-      const transcriptNormalized = index.normalizedText;
-
       // Find segments within the timestamp range
       const segmentsInRange: { idx: number; segment: TranscriptSegment }[] = [];
       for (let i = 0; i < transcript.length; i++) {
@@ -776,12 +772,11 @@ async function findExactQuotes(
 /**
  * Generate highlight reel topics from a video transcript using AI
  * @param transcript The video transcript segments
- * @param model The AI model to use (defaults to the configured provider model)
+ * @param options Configuration options for topic generation
  * @returns Array of topics with segments and quotes
  */
 export async function generateTopicsFromTranscript(
   transcript: TranscriptSegment[],
-  _model: string = DEFAULT_AI_MODEL,
   options: GenerateTopicsOptions = {}
 ): Promise<{
   topics: Topic[];

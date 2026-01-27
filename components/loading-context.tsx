@@ -19,6 +19,7 @@ export function LoadingContext({ videoInfo, preview }: LoadingContextProps) {
           <div className="flex gap-6">
             {/* Thumbnail */}
             <div className="flex-shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={videoInfo.thumbnail}
                 alt={videoInfo.title}

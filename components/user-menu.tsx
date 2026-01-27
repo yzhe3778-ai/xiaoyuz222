@@ -58,7 +58,7 @@ export function UserMenu() {
     return () => {
       isActive = false
     }
-  }, [user?.id])
+  }, [user])
 
   const planActionLabel = subscriptionTier === 'pro'
     ? 'Manage Billing'

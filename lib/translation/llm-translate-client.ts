@@ -1,14 +1,6 @@
-import { z } from 'zod';
 import { generateAIResponse } from '@/lib/ai-client';
 import { getLanguageName } from '@/lib/language-utils';
 import type { TranslationProvider, TranslationContext, TranslationScenario } from './types';
-
-/**
- * Schema for batch translation responses (JSON format - fallback)
- */
-const batchTranslationSchema = z.object({
-  translations: z.array(z.string()),
-});
 
 /**
  * Delimiter used for line-delimited translation format
@@ -172,7 +164,7 @@ export class LLMTranslateClient implements TranslationProvider {
           });
 
           result.successCount = result.translations.filter(t => t !== null).length;
-        } catch (retryError) {
+        } catch {
           console.warn('[LLM Translation] Retry of failed items also failed, using partial results');
         }
       }

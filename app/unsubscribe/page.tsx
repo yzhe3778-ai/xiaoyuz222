@@ -58,7 +58,7 @@ function UnsubscribeContent() {
                 Unsubscribed Successfully
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-8">
-                You have been removed from our newsletter list. You won't receive any more monthly updates.
+                You have been removed from our newsletter list. You won&apos;t receive any more monthly updates.
               </p>
               <Link
                 href="/"
@@ -75,7 +75,7 @@ function UnsubscribeContent() {
                 Something went wrong
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-8">
-                We couldn't process your unsubscribe request. Please try again or contact support if the problem persists.
+                We couldn&apos;t process your unsubscribe request. Please try again or contact support if the problem persists.
               </p>
               <Link
                 href="/"

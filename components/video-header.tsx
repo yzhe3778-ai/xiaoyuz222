@@ -56,7 +56,7 @@ export function VideoHeader({
           ? "Added to favorites"
           : "Removed from favorites"
       );
-    } catch (error) {
+    } catch {
       toast.error("Failed to update favorite status");
     } finally {
       setIsUpdating(false);

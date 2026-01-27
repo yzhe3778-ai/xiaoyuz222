@@ -26,7 +26,7 @@ export function getMockVideoInfo(videoId: string) {
 /**
  * Get mock transcript for a given video ID
  */
-export function getMockTranscript(videoId: string) {
+export function getMockTranscript() {
   return {
     content: MOCK_TRANSCRIPT,
     lang: 'en',

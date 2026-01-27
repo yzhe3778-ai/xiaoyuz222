@@ -68,7 +68,7 @@ export class AuditLogger {
                    headersList.get('x-real-ip') ||
                    'unknown';
         userAgent = headersList.get('user-agent') || 'unknown';
-      } catch (error) {
+      } catch {
         // Headers not available (e.g., in webhook context) - use defaults
         console.debug('Headers not available for audit log, using defaults');
       }

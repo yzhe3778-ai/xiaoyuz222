@@ -17,7 +17,7 @@ async function hitEndpoint(path, options) {
 function safeParseJson(text) {
   try {
     return JSON.parse(text);
-  } catch (error) {
+  } catch {
     return text;
   }
 }

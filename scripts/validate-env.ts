@@ -31,7 +31,7 @@ try {
       }
     }
   });
-} catch (error) {
+} catch {
   // .env.local doesn't exist, which is okay - might be using system env vars
 }
 
@@ -177,7 +177,7 @@ async function validateStripePortalConfiguration(): Promise<{
 
     // Portal is configured
     return { configured: true };
-  } catch (error) {
+  } catch {
     // If we get an error, treat as not configured but don't fail validation
     return {
       configured: false,

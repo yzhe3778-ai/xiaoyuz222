@@ -29,8 +29,6 @@ export function VideoProgressBar({
   onSeek,
   onTopicSelect,
   onPlayTopic,
-  transcript,
-  isLoadingThemeTopics = false,
   videoId,
   selectedLanguage = null,
   onRequestTranslation,

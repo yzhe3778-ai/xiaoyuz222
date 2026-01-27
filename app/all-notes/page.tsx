@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, type ReactNode, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { NoteWithVideo, NoteSource } from '@/lib/types';
 import { fetchAllNotes, deleteNote } from '@/lib/notes-client';
@@ -145,11 +145,7 @@ export default function AllNotesPage() {
     }
   }, []);
 
-  useEffect(() => {
-    loadNotes();
-  }, []);
-
-  async function loadNotes() {
+  const loadNotes = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -166,7 +162,11 @@ export default function AllNotesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
+
+  useEffect(() => {
+    loadNotes();
+  }, [loadNotes]);
 
   async function handleDeleteNote(noteId: string) {
     try {
@@ -429,7 +429,7 @@ export default function AllNotesPage() {
 
                   {/* Notes List */}
                   <div className="divide-y divide-border/40">
-                    {videoNotes.map((note, index) => {
+                    {videoNotes.map((note) => {
                       const selectedText = note.metadata?.selectedText?.trim();
                       const text = note.text ?? '';
 

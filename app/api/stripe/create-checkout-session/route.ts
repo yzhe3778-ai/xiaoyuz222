@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import { withSecurity, SECURITY_PRESETS } from '@/lib/security-middleware';
+import { withSecurity } from '@/lib/security-middleware';
 import { getStripeClient, STRIPE_PRICE_IDS } from '@/lib/stripe-client';
 import {
   createOrRetrieveStripeCustomer,
-  hasProSubscription,
 } from '@/lib/subscription-manager';
 import { formatValidationError } from '@/lib/validation';
 import { resolveAppUrl } from '@/lib/utils';

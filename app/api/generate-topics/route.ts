@@ -30,7 +30,6 @@ async function handler(request: NextRequest) {
 
     const {
       transcript,
-      model,
       includeCandidatePool,
       excludeTopicKeys,
       videoInfo,
@@ -41,7 +40,6 @@ async function handler(request: NextRequest) {
     // Use the shared function to generate topics
     const { topics, candidates } = await generateTopicsFromTranscript(
       transcript,
-      model,
       {
         videoInfo,
         includeCandidatePool,

@@ -26,7 +26,7 @@ import { getUserSubscriptionStatus, getUsageStats } from '@/lib/subscription-man
  *   stripeCustomerId: string | null
  * }
  */
-async function handler(req: NextRequest) {
+async function handler(_req: NextRequest) {
   try {
     // Get authenticated user
     const supabase = await createClient();

@@ -35,7 +35,7 @@ try {
       }
     }
   });
-} catch (error) {
+} catch {
   console.error('⚠️  Warning: Could not load .env.local file');
   console.error('   Make sure .env.local exists in the project root or environment variables are set via system\n');
 }

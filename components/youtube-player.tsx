@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Topic, TranscriptSegment, PlaybackCommand, Citation, TranslationRequestHandler } from "@/lib/types";
+import { Topic, TranscriptSegment, PlaybackCommand, TranslationRequestHandler } from "@/lib/types";
 import { formatDuration } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { VideoProgressBar } from "@/components/video-progress-bar";
@@ -37,11 +37,9 @@ export function YouTubePlayer({
   onPlayerReady,
   topics = [],
   onTopicSelect,
-  onPlayTopic,
   transcript = [],
   isPlayingAll = false,
   playAllIndex = 0,
-  onTogglePlayAll,
   setPlayAllIndex,
   setIsPlayingAll,
   renderControls = true,
@@ -210,7 +208,7 @@ export function YouTubePlayer({
         timeUpdateIntervalRef.current = null;
       }
     };
-  }, [videoId, onDurationChange]); // Only depend on videoId
+  }, [videoId, onDurationChange, onTimeUpdate, setIsPlayingAll, setPlayAllIndex, onPlayerReady]);
 
   // Centralized command executor
   useEffect(() => {
@@ -336,7 +334,7 @@ export function YouTubePlayer({
         playerRef.current.playVideo();
       }
     }, 100);
-  }, [isPlayingAll, playAllIndex, playerReady]);
+  }, [isPlayingAll, playAllIndex, playerReady, topics, onTopicSelect]);
 
   // Monitor playback to handle citation reel transitions
   useEffect(() => {

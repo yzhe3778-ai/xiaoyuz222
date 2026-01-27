@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 function parseHost(url: string | undefined) {
@@ -15,8 +15,6 @@ export async function middleware(request: NextRequest) {
   const response = await updateSession(request);
 
   // Add Content-Security-Policy and other security headers
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-
   const supabaseHost = parseHost(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const supabaseConnectSrc = supabaseHost
     ? [`https://${supabaseHost}`, `wss://${supabaseHost}`]

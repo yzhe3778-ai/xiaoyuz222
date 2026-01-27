@@ -23,7 +23,7 @@ interface VideoPageClientProps {
   };
 }
 
-export function VideoPageClient({ videoId, slug, initialVideo }: VideoPageClientProps) {
+export function VideoPageClient({ videoId, slug }: VideoPageClientProps) {
   const router = useRouter();
 
   useEffect(() => {

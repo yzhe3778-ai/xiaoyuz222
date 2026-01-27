@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TranscriptSegment, Topic, ChatMessage, Citation } from '@/lib/types';
+import { TranscriptSegment, Topic, Citation } from '@/lib/types';
 import { normalizeTimestampSources } from '@/lib/timestamp-normalization';
 import { extractTimestamps, parseTimestamp } from '@/lib/timestamp-utils';
 import { chatRequestSchema, formatValidationError } from '@/lib/validation';
@@ -369,7 +369,7 @@ ${message}
       content: processedAnswer,
       citations,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to generate response' },
       { status: 500 }

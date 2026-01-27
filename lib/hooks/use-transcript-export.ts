@@ -33,7 +33,6 @@ export function useTranscriptExport({
   isCheckingSubscription,
   fetchSubscriptionStatus,
   onAuthRequired,
-  onRequestTranslation,
   onBulkTranslation,
   translationCache,
 }: UseTranscriptExportOptions) {

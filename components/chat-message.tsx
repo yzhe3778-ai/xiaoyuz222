@@ -80,7 +80,7 @@ export function ChatMessageComponent({ message, onCitationClick, onTimestampClic
           return;
         }
         onCitationClick(citation);
-      }, [citation, onCitationClick]);
+      }, [citation]);
 
       if (!citation) {
         return <span className="text-xs text-muted-foreground">[{citationNumber}]</span>;

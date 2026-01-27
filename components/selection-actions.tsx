@@ -50,7 +50,6 @@ export function SelectionActions({
   const [selection, setSelection] = useState<SelectionState | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const latestSelectionRef = useRef<SelectionState | null>(null);
-  const container = containerRef.current;
 
   const clearSelection = useCallback(() => {
     setSelection(null);

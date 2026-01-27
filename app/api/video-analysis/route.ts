@@ -103,7 +103,6 @@ async function handler(req: NextRequest) {
       videoId,
       videoInfo,
       transcript,
-      model,
       forceRegenerate,
       theme,
       mode
@@ -153,7 +152,6 @@ async function handler(req: NextRequest) {
       try {
         const { topics: themedTopics } = await generateTopicsFromTranscript(
           transcript,
-          model,
           {
             videoInfo,
             theme,
@@ -396,7 +394,6 @@ async function handler(req: NextRequest) {
 
     const generationResult = await generateTopicsFromTranscript(
       transcript,
-      model,
       {
         videoInfo,
         includeCandidatePool: validatedData.includeCandidatePool,

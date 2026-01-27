@@ -11,7 +11,6 @@ interface SuggestedQuestionsProps {
 export function SuggestedQuestions({
   questions,
   onQuestionClick,
-  isLoading,
   isChatLoading = false,
 }: SuggestedQuestionsProps) {
   if (questions.length === 0) {

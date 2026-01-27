@@ -31,7 +31,7 @@ const modes = [
   }
 ];
 
-export function ModeSelector({ value, onChange, className }: ModeSelectorProps) {
+export function ModeSelector({ value, onChange }: ModeSelectorProps) {
   const currentMode = modes.find(m => m.value === value) || modes[0];
   const Icon = currentMode.icon;
 

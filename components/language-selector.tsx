@@ -30,7 +30,6 @@ interface LanguageSelectorMenuProps {
   chevronRef: React.RefObject<HTMLButtonElement | null>;
   menuRef: React.RefObject<HTMLDivElement | null>;
   filteredLanguages: LanguageOption[];
-  currentLanguageCode: string;
   selectedLanguage: string | null;
   currentSourceLanguage?: string;
   isAuthenticated: boolean;
@@ -294,7 +293,6 @@ export function LanguageSelector({
           chevronRef={chevronRef}
           menuRef={menuRef}
           filteredLanguages={filteredLanguages}
-          currentLanguageCode={currentLanguageCode}
           selectedLanguage={selectedLanguage}
           currentSourceLanguage={currentSourceLanguage}
           isAuthenticated={isAuthenticated}
@@ -314,7 +312,6 @@ function LanguageSelectorMenu({
   chevronRef,
   menuRef,
   filteredLanguages,
-  currentLanguageCode,
   selectedLanguage,
   currentSourceLanguage,
   isAuthenticated,

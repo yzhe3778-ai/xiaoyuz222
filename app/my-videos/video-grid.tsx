@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { buildVideoSlug, formatDuration } from '@/lib/utils';
-import { Calendar, Clock, Play, Star, Search, Loader2 } from 'lucide-react';
+import { Calendar, Play, Star, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -122,7 +122,7 @@ export function VideoGrid({ videos }: VideoGridProps) {
           ? 'Added to favorites'
           : 'Removed from favorites'
       );
-    } catch (error) {
+    } catch {
       toast.error('Failed to update favorite status');
     } finally {
       setUpdatingFavorites(prev => {

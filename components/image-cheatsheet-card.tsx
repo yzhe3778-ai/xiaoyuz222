@@ -88,7 +88,7 @@ export function ImageCheatsheetCard({
   const [isCheckingLimit, setIsCheckingLimit] = useState(false);
   const [limit, setLimit] = useState<number | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
-  const [resetAt, setResetAt] = useState<string | null>(null);
+  const [, setResetAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isConfiguring, setIsConfiguring] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<string>("9:16");

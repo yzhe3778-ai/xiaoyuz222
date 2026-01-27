@@ -192,7 +192,7 @@ function recoverPartialTakeaways(raw: string): StructuredTakeaway[] | null {
       if (takeaways.length >= 6) {
         break; // Max 6 per schema
       }
-    } catch (e) {
+    } catch {
       // Skip malformed objects
       continue;
     }

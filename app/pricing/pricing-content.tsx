@@ -13,7 +13,7 @@ import {
 import { startCheckout, openBillingPortal } from '@/lib/stripe-actions'
 import type { SubscriptionStatus, SubscriptionTier } from '@/lib/subscription-manager'
 import { toast } from 'sonner'
-import { ArrowUpRight, CheckCircle2, Infinity, Layers, Loader2, Package2, Sparkles, Wallet } from 'lucide-react'
+import { CheckCircle2, Infinity, Layers, Loader2, Package2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface PricingContentProps {
@@ -375,9 +375,4 @@ function BillingToggle({
       </button>
     </div>
   )
-}
-
-function formatStatus(status: SubscriptionStatus | undefined) {
-  if (!status) return 'inactive'
-  return status.replace('_', ' ')
 }

@@ -41,7 +41,7 @@ try {
       }
     }
   });
-} catch (error) {
+} catch {
   console.error('⚠️  Warning: Could not load .env.local file');
   console.error('   Make sure environment variables are set via system or .env.local\n');
 }

@@ -4,23 +4,12 @@ import crypto from 'crypto';
 const CSRF_TOKEN_HEADER = 'X-CSRF-Token';
 const CSRF_TOKEN_COOKIE = 'csrf-token';
 const TOKEN_LENGTH = 32;
-const TOKEN_SALT = process.env.CSRF_SALT || 'default-csrf-salt-change-in-production';
 
 /**
  * Generate a new CSRF token
  */
 export function generateCSRFToken(): string {
   return crypto.randomBytes(TOKEN_LENGTH).toString('hex');
-}
-
-/**
- * Hash a token with salt for secure comparison
- */
-function hashToken(token: string): string {
-  return crypto
-    .createHmac('sha256', TOKEN_SALT)
-    .update(token)
-    .digest('hex');
 }
 
 /**
@@ -128,9 +117,8 @@ export class CSRFProtection {
   /**
    * Generate and store a CSRF token for a session
    */
-  async createToken(sessionId: string): Promise<string> {
+  async createToken(): Promise<string> {
     const token = generateCSRFToken();
-    const hashedToken = hashToken(token);
 
     // In production, you might want to store this in Redis or a database
     // For now, we'll use the token directly

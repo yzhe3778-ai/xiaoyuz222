@@ -127,7 +127,6 @@ export function AIChat({
   onSaveNote,
   onTakeNoteFromSelection,
   selectedLanguage,
-  translationCache,
   onRequestTranslation,
   isAuthenticated,
   onRequestSignIn
@@ -147,7 +146,7 @@ export function AIChat({
   const [translatedTopQuotesLabel, setTranslatedTopQuotesLabel] = useState(TOP_QUOTES_LABEL);
   const [translatedFollowUpQuestions, setTranslatedFollowUpQuestions] = useState<string[]>([]);
   // Pre-translated fallback questions map (original -> translated)
-  const [translatedFallbacksMap, setTranslatedFallbacksMap] = useState<Map<string, string>>(new Map());
+  const [, setTranslatedFallbacksMap] = useState<Map<string, string>>(new Map());
   const chatMessagesContainerRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
@@ -215,7 +214,8 @@ export function AIChat({
       const normalized = normalizeTopicTimestampRange(timestamp);
 
       if (!normalized) {
-        const { quote: _quote, ...rest } = topic;
+        const { quote: _, ...rest } = topic;
+        void _; // Intentionally unused - extracting quote to exclude it
         return { ...rest };
       }
 
@@ -387,12 +387,6 @@ export function AIChat({
       isCancelled = true;
     };
   }, [selectedLanguage, onRequestTranslation]);
-
-  // Helper to get translated fallback question
-  const getTranslatedFallback = useCallback((original: string): string => {
-    if (!selectedLanguage) return original;
-    return translatedFallbacksMap.get(original) || original;
-  }, [selectedLanguage, translatedFallbacksMap]);
 
   const fetchSuggestedQuestions = useCallback(async () => {
     setLoadingQuestions(true);

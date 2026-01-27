@@ -41,7 +41,6 @@ export function HighlightsPanel({
   onSeek,
   onPlayAll,
   isPlayingAll,
-  playAllIndex = 0,
   currentTime,
   videoDuration,
   transcript = [],
