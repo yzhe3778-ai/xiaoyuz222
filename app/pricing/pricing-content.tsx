@@ -41,12 +41,12 @@ export default function PricingContent({ isAuthenticated, tier, status, cancelAt
     'Chat with transcripts',
     'Save notes',
     'Transcript translation',
+    'Export transcripts',
   ]
 
   const proFeatures = [
     '100 videos / month',
     'Everything from basic',
-    'Export transcripts',
   ]
 
   const topupFeatures = [

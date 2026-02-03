@@ -117,7 +117,9 @@ async function handler(req: NextRequest) {
     const unlimitedAccess = hasUnlimitedVideoAllowance(user);
 
     let cachedVideo: any = null;
-    if (!forceRegenerate) {
+    const skipCache = process.env.NEXT_PUBLIC_SKIP_VIDEO_CACHE === 'true';
+
+    if (!forceRegenerate && !skipCache) {
       const { data } = await supabase
         .from('video_analyses')
         .select('*')
@@ -125,6 +127,8 @@ async function handler(req: NextRequest) {
         .single();
 
       cachedVideo = data ?? null;
+    } else if (skipCache) {
+      console.log('[video-analysis] Skipping cache due to NEXT_PUBLIC_SKIP_VIDEO_CACHE=true');
     }
 
     const isCachedAnalysis = Boolean(cachedVideo?.topics);

@@ -396,13 +396,7 @@ export default function AnalyzePage() {
     transcript,
     topics,
     videoInfo,
-    user,
     hasSpeakerData,
-    subscriptionStatus,
-    isCheckingSubscription,
-    fetchSubscriptionStatus,
-    onAuthRequired: handleAuthRequired,
-    onRequestTranslation: translateWithContext,
     onBulkTranslation: handleBulkTranslation,
     translationCache: translationCache,
   });
@@ -2158,7 +2152,7 @@ export default function AnalyzePage() {
         error={exportErrorMessage}
         disableDownloadMessage={exportDisableMessage}
         hasSpeakerData={hasSpeakerData}
-        willConsumeTopup={subscriptionStatus?.willConsumeTopup}
+        willConsumeTopup={false}
         videoTitle={videoInfo?.title}
         translationProgress={translationProgress}
       />

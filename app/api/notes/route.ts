@@ -5,8 +5,8 @@ import { formatValidationError, noteDeleteSchema, noteInsertSchema } from '@/lib
 import { z } from 'zod';
 
 const getNotesQuerySchema = z.object({
-  youtubeId: z.string().optional(),
-  videoId: z.string().optional()
+  youtubeId: z.string().nullable().optional().transform(val => val ?? undefined),
+  videoId: z.string().nullable().optional().transform(val => val ?? undefined)
 }).refine(data => data.youtubeId || data.videoId, {
   message: 'Either youtubeId or videoId must be provided'
 });

@@ -17,7 +17,20 @@ export async function fetchNotes(params: { youtubeId: string }): Promise<Note[]>
   const response = await csrfFetch.get(`/api/notes?${query.toString()}`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch notes');
+    // 获取详细错误信息
+    const errorData = await response.json().catch(() => null);
+    const errorMessage = errorData?.error || 'Failed to fetch notes';
+    const statusCode = response.status;
+
+    console.error('Failed to fetch notes:', {
+      statusCode,
+      errorMessage,
+      errorDetails: errorData?.details,
+      youtubeId: params.youtubeId,
+      fullError: errorData
+    });
+
+    throw new Error(`${errorMessage} (Status: ${statusCode})`);
   }
 
   const data = await response.json();
@@ -70,7 +83,19 @@ export async function fetchAllNotes(): Promise<NoteWithVideo[]> {
   const response = await csrfFetch.get('/api/notes/all');
 
   if (!response.ok) {
-    throw new Error('Failed to fetch all notes');
+    // 获取详细错误信息
+    const errorData = await response.json().catch(() => null);
+    const errorMessage = errorData?.error || 'Failed to fetch all notes';
+    const statusCode = response.status;
+
+    console.error('Failed to fetch all notes:', {
+      statusCode,
+      errorMessage,
+      errorDetails: errorData?.details,
+      fullError: errorData
+    });
+
+    throw new Error(`${errorMessage} (Status: ${statusCode})`);
   }
 
   const data = await response.json();

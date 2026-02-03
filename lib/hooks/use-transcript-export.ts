@@ -2,8 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { createTranscriptExport, type TranscriptExportFormat, type TranscriptExportMode } from '@/lib/transcript-export';
-import { isProSubscriptionActive, type SubscriptionStatusResponse } from './use-subscription';
-import type { TranscriptSegment, Topic, VideoInfo, TranslationRequestHandler } from '@/lib/types';
+import type { TranscriptSegment, Topic, VideoInfo } from '@/lib/types';
 import type { BulkTranslationHandler } from './use-translation';
 
 interface UseTranscriptExportOptions {
@@ -11,13 +10,7 @@ interface UseTranscriptExportOptions {
   transcript: TranscriptSegment[];
   topics: Topic[];
   videoInfo: VideoInfo | null;
-  user: any;
   hasSpeakerData: boolean;
-  subscriptionStatus: SubscriptionStatusResponse | null;
-  isCheckingSubscription: boolean;
-  fetchSubscriptionStatus: (options?: { force?: boolean }) => Promise<SubscriptionStatusResponse | null>;
-  onAuthRequired: () => void;
-  onRequestTranslation: TranslationRequestHandler;
   onBulkTranslation: BulkTranslationHandler;
   translationCache: Map<string, string>;
 }
@@ -27,12 +20,7 @@ export function useTranscriptExport({
   transcript,
   topics,
   videoInfo,
-  user,
   hasSpeakerData,
-  subscriptionStatus,
-  isCheckingSubscription,
-  fetchSubscriptionStatus,
-  onAuthRequired,
   onBulkTranslation,
   translationCache,
 }: UseTranscriptExportOptions) {
@@ -81,71 +69,17 @@ export function useTranscriptExport({
       return;
     }
 
-    if (!user) {
-      onAuthRequired();
-      return;
-    }
-
-    const status = await fetchSubscriptionStatus();
-    if (!status) {
-      return;
-    }
-
-    if (status.tier !== 'pro') {
-      setShowExportUpsell(true);
-      return;
-    }
-
-    if (!isProSubscriptionActive(status)) {
-      setExportDisableMessage('Your subscription is not active. Visit billing to reactivate and continue exporting transcripts.');
-      setExportErrorMessage(null);
-      setIsExportDialogOpen(true);
-      return;
-    }
-
-    if (status.usage.totalRemaining <= 0) {
-      setExportDisableMessage("You've hit your export limit. Purchase a top-up or wait for your cycle reset.");
-      setExportErrorMessage(null);
-      setIsExportDialogOpen(true);
-      return;
-    }
-
     setExportDisableMessage(null);
     setExportErrorMessage(null);
     setIsExportDialogOpen(true);
   }, [
     videoId,
     transcript.length,
-    user,
-    onAuthRequired,
-    fetchSubscriptionStatus,
   ]);
 
   const handleConfirmExport = useCallback(async () => {
     if (transcript.length === 0) {
       setExportErrorMessage('Transcript is still loading. Please try again.');
-      return;
-    }
-
-    const status = await fetchSubscriptionStatus();
-    if (!status) {
-      setExportErrorMessage('Unable to verify your subscription. Please try again.');
-      return;
-    }
-
-    if (status.tier !== 'pro') {
-      setShowExportUpsell(true);
-      setIsExportDialogOpen(false);
-      return;
-    }
-
-    if (!isProSubscriptionActive(status)) {
-      setExportDisableMessage('Your subscription is not active. Visit billing to reactivate and continue exporting transcripts.');
-      return;
-    }
-
-    if (status.usage.totalRemaining <= 0) {
-      setExportDisableMessage("You've hit your export limit. Purchase a top-up or wait for your cycle reset.");
       return;
     }
 
@@ -215,7 +149,6 @@ export function useTranscriptExport({
       toast.success('Transcript export started');
       setIsExportDialogOpen(false);
       setExportDisableMessage(null);
-      await fetchSubscriptionStatus({ force: true });
     } catch (error) {
       console.error('Transcript export failed:', error);
       const message =
@@ -227,7 +160,6 @@ export function useTranscriptExport({
     }
   }, [
     transcript,
-    fetchSubscriptionStatus,
     exportFormat,
     exportMode,
     targetLanguage,
@@ -260,42 +192,6 @@ export function useTranscriptExport({
       };
     }
 
-    if (isCheckingSubscription) {
-      return {
-        disabled: true,
-        isLoading: true,
-        tooltip: 'Checking export availability…',
-      };
-    }
-
-    if (!user) {
-      return {
-        badgeLabel: 'Pro',
-        tooltip: 'Sign in to export transcripts',
-      };
-    }
-
-    if (subscriptionStatus && subscriptionStatus.tier !== 'pro') {
-      return {
-        badgeLabel: 'Pro',
-        tooltip: 'Upgrade to Pro to export transcripts',
-      };
-    }
-
-    if (subscriptionStatus && !isProSubscriptionActive(subscriptionStatus)) {
-      return {
-        badgeLabel: 'Pro',
-        tooltip: 'Reactivate your subscription to export transcripts',
-      };
-    }
-
-    if (subscriptionStatus && subscriptionStatus.usage.totalRemaining <= 0) {
-      return {
-        badgeLabel: 'Pro',
-        tooltip: "You've hit your export limit. Purchase a top-up or wait for reset.",
-      };
-    }
-
     return {
       tooltip: 'Export transcript',
     };
@@ -303,9 +199,6 @@ export function useTranscriptExport({
     videoId,
     transcript.length,
     isExportingTranscript,
-    isCheckingSubscription,
-    user,
-    subscriptionStatus,
   ]);
 
   return {
