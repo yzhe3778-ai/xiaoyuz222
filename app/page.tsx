@@ -47,7 +47,7 @@ function HomeContent() {
 
     router.replace(
       `/analyze/${videoIdParam}${params.toString() ? `?${params.toString()}` : ""}`,
-      { scroll: false }
+      { scroll: false },
     );
   }, [router, searchParams]);
 
@@ -89,19 +89,22 @@ function HomeContent() {
   useEffect(() => {
     if (!searchParams) return;
 
-    const authError = searchParams.get('auth_error');
-    const authStatus = searchParams.get('auth_status');
+    const authError = searchParams.get("auth_error");
+    const authStatus = searchParams.get("auth_status");
 
-    if (authStatus === 'link_expired') {
-      toast.info('Your verification link has expired or was already used. Please try signing in.', {
-        duration: 5000,
-      });
+    if (authStatus === "link_expired") {
+      toast.info(
+        "Your verification link has expired or was already used. Please try signing in.",
+        {
+          duration: 5000,
+        },
+      );
       setAuthModalOpen(true);
 
       const params = new URLSearchParams(searchParams.toString());
-      params.delete('auth_status');
+      params.delete("auth_status");
       const queryString = params.toString();
-      router.replace(queryString ? `/?${queryString}` : '/', { scroll: false });
+      router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
       return;
     }
 
@@ -111,9 +114,9 @@ function HomeContent() {
 
     // Clean up the URL
     const params = new URLSearchParams(searchParams.toString());
-    params.delete('auth_error');
+    params.delete("auth_error");
     const queryString = params.toString();
-    router.replace(queryString ? `/?${queryString}` : '/', { scroll: false });
+    router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
   }, [searchParams, router]);
 
   useEffect(() => {
@@ -132,11 +135,20 @@ function HomeContent() {
   }, [authModalOpen]);
 
   const handleSubmit = useCallback(
-    (url: string) => {
+    (url: string, apiKey?: string) => {
       const videoId = extractVideoId(url);
       if (!videoId) {
         toast.error("Please enter a valid YouTube URL");
         return;
+      }
+
+      // 如果用户提供了 API 密钥，存储到 sessionStorage 供后续请求使用
+      if (apiKey) {
+        try {
+          sessionStorage.setItem("user_supadata_api_key", apiKey);
+        } catch (e) {
+          // sessionStorage 不可用时忽略
+        }
       }
 
       const params = new URLSearchParams();
@@ -144,7 +156,7 @@ function HomeContent() {
 
       router.push(`/analyze/${videoId}?${params.toString()}`);
     },
-    [router]
+    [router],
   );
 
   const handleFeelingLucky = useCallback(async () => {
@@ -155,7 +167,11 @@ function HomeContent() {
     setIsFeelingLucky(true);
     try {
       const response = await fetch("/api/random-video");
-      let data: { youtubeId?: string; url?: string | null; error?: string } | null = null;
+      let data: {
+        youtubeId?: string;
+        url?: string | null;
+        error?: string;
+      } | null = null;
 
       try {
         data = await response.json();
@@ -172,7 +188,9 @@ function HomeContent() {
       }
 
       if (!data.youtubeId) {
-        throw new Error("No sample video is available right now. Please try again.");
+        throw new Error(
+          "No sample video is available right now. Please try again.",
+        );
       }
 
       const params = new URLSearchParams();
@@ -189,7 +207,7 @@ function HomeContent() {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Failed to load a sample video. Please try again."
+          : "Failed to load a sample video. Please try again.",
       );
     } finally {
       setIsFeelingLucky(false);
@@ -202,7 +220,9 @@ function HomeContent() {
         <div className="mx-auto flex w-full max-w-[660px] -translate-y-[5vh] transform flex-col items-center gap-9 px-6 py-16 text-center sm:py-24">
           <header className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-3">
-              <h1 className="text-[21px] font-bold tracking-tight text-[#787878]">LongCut</h1>
+              <h1 className="text-[21px] font-bold tracking-tight text-[#787878]">
+                LongCut
+              </h1>
             </div>
             <p className="text-[14px] leading-[15px] text-[#787878]">
               The best way to learn from long videos.
@@ -223,7 +243,8 @@ function HomeContent() {
                   Don&apos;t take the shortcut.
                 </h3>
                 <p className="max-w-[70%] text-[14px] leading-[1.5] text-[#8d8d8d]">
-                  LongCut doesn&apos;t summarize. We show you where to look instead. Find the highlights. Take notes. Ask questions.
+                  LongCut doesn&apos;t summarize. We show you where to look
+                  instead. Find the highlights. Take notes. Ask questions.
                 </p>
               </div>
               <div className="pointer-events-none absolute right-[10px] top-[-00px] h-[110px] w-[110px]">

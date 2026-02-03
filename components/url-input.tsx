@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, ArrowUp, Link, Sparkles } from "lucide-react";
+import {
+  Loader2,
+  ArrowUp,
+  Link,
+  Sparkles,
+  Key,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { extractVideoId } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,13 +19,16 @@ import { isGrokProviderOnClient } from "@/lib/ai-providers/client-config";
 import type { TopicGenerationMode } from "@/lib/types";
 
 interface UrlInputProps {
-  onSubmit: (url: string) => void;
+  onSubmit: (url: string, apiKey?: string) => void;
   isLoading?: boolean;
   mode?: TopicGenerationMode;
   onModeChange?: (mode: TopicGenerationMode) => void;
   onFeelingLucky?: () => void | Promise<void>;
   isFeelingLucky?: boolean;
 }
+
+// 本地存储的 key
+const API_KEY_STORAGE_KEY = "supadata_api_key";
 
 export function UrlInput({
   onSubmit,
@@ -31,13 +42,40 @@ export function UrlInput({
   const [error, setError] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isValidUrl, setIsValidUrl] = useState(false);
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [apiKey, setApiKey] = useState("");
   const forceSmartMode = isGrokProviderOnClient();
   const showModeSelector =
     !forceSmartMode && typeof onModeChange === "function";
   const showFeelingLucky = typeof onFeelingLucky === "function";
   const modeValue: TopicGenerationMode = forceSmartMode
     ? "smart"
-    : mode ?? "fast";
+    : (mode ?? "fast");
+
+  // 从本地存储加载 API 密钥
+  useEffect(() => {
+    try {
+      const savedKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+      if (savedKey) {
+        setApiKey(savedKey);
+      }
+    } catch (e) {
+      // localStorage 不可用时忽略
+    }
+  }, []);
+
+  // 保存 API 密钥到本地存储
+  useEffect(() => {
+    try {
+      if (apiKey.trim()) {
+        localStorage.setItem(API_KEY_STORAGE_KEY, apiKey.trim());
+      } else {
+        localStorage.removeItem(API_KEY_STORAGE_KEY);
+      }
+    } catch (e) {
+      // localStorage 不可用时忽略
+    }
+  }, [apiKey]);
 
   // Validate URL in real-time
   useEffect(() => {
@@ -65,7 +103,7 @@ export function UrlInput({
       return;
     }
 
-    onSubmit(url);
+    onSubmit(url, apiKey.trim() || undefined);
   };
 
   return (
@@ -73,9 +111,9 @@ export function UrlInput({
       <div className="flex flex-col gap-2">
         <Card
           className={cn(
-            "relative flex flex-col items-start gap-6 self-stretch rounded-[22px] border border-[#f0f1f1] bg-white px-6 pt-6 pb-3 shadow-[2px_11px_40.4px_rgba(0,0,0,0.06)] transition-shadow",
+            "relative flex flex-col items-start gap-4 self-stretch rounded-[22px] border border-[#f0f1f1] bg-white px-6 pt-6 pb-3 shadow-[2px_11px_40.4px_rgba(0,0,0,0.06)] transition-shadow",
             isFocused && "shadow-[2px_11px_40.4px_rgba(0,0,0,0.1)]",
-            error && "ring-2 ring-destructive"
+            error && "ring-2 ring-destructive",
           )}
         >
           {/* Top row: Input field only */}
@@ -98,9 +136,59 @@ export function UrlInput({
             />
           </div>
 
+          {/* API Key section - collapsible */}
+          <div className="w-full">
+            <button
+              type="button"
+              onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+              className="flex items-center gap-1.5 text-[12px] text-[#b3b4b4] hover:text-[#787878] transition-colors"
+            >
+              <Key className="h-3 w-3" />
+              <span>自定义 API 密钥（可选）</span>
+              {showApiKeyInput ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+            </button>
+
+            {showApiKeyInput && (
+              <div className="mt-2 flex items-center gap-2.5 animate-in slide-in-from-top-2 duration-200">
+                <div className="w-5 flex items-center justify-end shrink-0">
+                  <Key className="h-4 w-4 text-[#989999]" />
+                </div>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="输入你的 Supadata API Key..."
+                  aria-label="Supadata API Key"
+                  className="flex-1 border border-[#e5e5e5] rounded-lg bg-transparent px-3 py-1.5 text-[13px] text-[#787878] placeholder:text-[#b3b4b4] focus:outline-none focus:border-[#989999]"
+                  disabled={isLoading}
+                />
+                {apiKey && (
+                  <button
+                    type="button"
+                    onClick={() => setApiKey("")}
+                    className="text-[11px] text-[#b3b4b4] hover:text-destructive transition-colors"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+            )}
+            {showApiKeyInput && apiKey && (
+              <p className="mt-1.5 text-[11px] text-green-600 pl-7">
+                ✓ 将使用你的 API 密钥
+              </p>
+            )}
+          </div>
+
           {/* Bottom row: Mode selector (left) and actions (right) */}
           <div className="flex w-full flex-wrap items-center gap-3">
-            {showModeSelector && <ModeSelector value={modeValue} onChange={onModeChange} />}
+            {showModeSelector && (
+              <ModeSelector value={modeValue} onChange={onModeChange} />
+            )}
             <div className="ml-auto flex items-center gap-2">
               {showFeelingLucky && (
                 <Button
@@ -114,7 +202,7 @@ export function UrlInput({
                   }}
                   className={cn(
                     "h-7 rounded-full border border-[#efefef] bg-white px-3 text-[12px] font-semibold text-[#b3b4b4] shadow-none hover:bg-[#f7f7f7] disabled:bg-[#f5f5f5] disabled:text-[#a7a7a7]",
-                    isFeelingLucky && "cursor-wait"
+                    isFeelingLucky && "cursor-wait",
                   )}
                 >
                   {isFeelingLucky ? (
@@ -140,7 +228,7 @@ export function UrlInput({
                   isValidUrl
                     ? "bg-black hover:bg-black/80"
                     : "bg-[#B3B4B4] hover:bg-[#9d9e9e]",
-                  "disabled:bg-[#B3B4B4] disabled:text-white disabled:opacity-100"
+                  "disabled:bg-[#B3B4B4] disabled:text-white disabled:opacity-100",
                 )}
               >
                 {isLoading ? (
@@ -153,7 +241,13 @@ export function UrlInput({
           </div>
         </Card>
         {error && (
-          <p id="url-error" role="alert" className="text-xs text-destructive px-1">{error}</p>
+          <p
+            id="url-error"
+            role="alert"
+            className="text-xs text-destructive px-1"
+          >
+            {error}
+          </p>
         )}
       </div>
     </form>

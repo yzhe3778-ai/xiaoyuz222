@@ -141,7 +141,7 @@ function calculateTranscriptDuration(segments: { start: number; duration: number
 
 async function handler(request: NextRequest) {
   try {
-    const { url, lang, expectedDuration } = await request.json();
+    const { url, lang, expectedDuration, userApiKey } = await request.json();
 
     if (!url) {
       return respondWithNoCredits({ error: 'YouTube URL is required' }, 400);
@@ -181,9 +181,15 @@ async function handler(request: NextRequest) {
       });
     }
 
-    const apiKey = process.env.SUPADATA_API_KEY;
+    // 优先使用用户提供的 API 密钥，没有则使用默认密钥
+    const apiKey = userApiKey || process.env.SUPADATA_API_KEY;
     if (!apiKey) {
-      return respondWithNoCredits({ error: 'API configuration error' }, 500);
+      return respondWithNoCredits({ error: 'API configuration error. Please provide your own Supadata API key.' }, 500);
+    }
+
+    // 记录是否使用用户密钥
+    if (userApiKey) {
+      console.log('[TRANSCRIPT] Using user-provided API key');
     }
 
     // Fetch transcript with retry logic for incomplete results
