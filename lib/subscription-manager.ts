@@ -52,7 +52,7 @@ export interface GenerationDecision {
 }
 
 export const TIER_LIMITS: Record<SubscriptionTier, number> = {
-  free: 3,
+  free: 999999, // 无限制
   pro: 100,
 };
 
