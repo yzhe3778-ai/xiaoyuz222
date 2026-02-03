@@ -1,0 +1,39 @@
+# Windsurf AI 自动上下文配置
+# 这个文件会被 Windsurf 自动加载，无需手动引用
+
+## 项目信息
+- 项目名称：GLM-4.7 AI编程指南
+- 项目类型：文档项目
+- 当前阶段：DEVELOPMENT
+
+## 规则引用
+所有代码生成和修改必须遵循以下规则：
+- 项目概览：.agent/rules/00-project-overview.md
+- 阶段规则：.agent/rules/stages/development.md
+- 文档规则：.agent/rules/04-documentation.md
+- 落地规范：.agent/rules/99-落地实施规范.md
+
+## 知识库
+项目相关知识位于：
+- 知识库：.agent/knowledge/
+- 提示词模板：.agent/prompts/
+
+## 规则优先级
+1. 阶段规则 > 领域规则 > 共享规则 > 项目概览
+2. 冲突时，高优先级规则覆盖低优先级
+
+## 代码风格
+- 使用 Markdown 编写文档
+- 遵循 markdownlint 规则
+- 中文撰写，保持专业术语
+
+## 输出要求
+1. 遵循项目规则生成代码/文档
+2. 重要变更需要更新 CHANGELOG.md
+3. 问题需要记录到 .agent/feedback/rule-issues.md
+
+## 文档项目特殊规则
+- Markdown 格式规范
+- 使用层级标题（H1-H4）
+- 包含代码示例时指定语言
+- 使用表格组织结构化数据
